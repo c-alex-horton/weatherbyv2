@@ -1,0 +1,16 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  min-height: 100vh;
+  background-image: linear-gradient(
+    to right top,
+    #0496b8,
+    #29aecb,
+    #43c7dc,
+    #5ee1ed,
+    #79fafd
+  );
+  padding: 25px;
+}

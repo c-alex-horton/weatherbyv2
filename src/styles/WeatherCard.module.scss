@@ -1,0 +1,53 @@
+.card {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 45px;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 300px;
+  max-width: 600px;
+  width: 30%;
+  margin: 20px;
+  h1 {
+    display: flex;
+    align-items: center;
+    margin-left: -1em;
+  }
+  svg {
+    font-size: 1em;
+    opacity: 0.5;
+    margin-right: 10px;
+  }
+  img {
+    height: 100px;
+    width: 100px;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2em;
+    padding: 25px 0;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+  }
+  .bar {
+    width: 40%;
+    height: 7px;
+    border-radius: 25px;
+    background-color: rgba($color: #ffffff, $alpha: 0.5);
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    .barFill {
+      position: absolute;
+      width: 0%;
+      background-color: rgb(0, 191, 255);
+      inset: 0;
+    }
+  }
+}
