@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import styles from '../styles/Dashboard.module.scss'
 import WeatherCard from './WeatherCard'
+import AddCard from './AddCard'
 
 const Dashboard = () => {
   // Locations to render Cards
+  // ? Make this a hash?
   const [locations, setLocations] = useState([
     'Austin, TX',
     'Greenville, TX',
@@ -21,10 +23,10 @@ const Dashboard = () => {
     array.push(newLoc)
     setLocations(array)
   }
-  const removeLocation = (index: number) => {
+  const removeLocation = (loc: string) => {
     let array = Array.from(locations)
-    delete array[index]
-    setLocations(array)
+
+    setLocations(array.filter((e) => e !== loc))
   }
 
   const funcs = {
@@ -38,16 +40,12 @@ const Dashboard = () => {
       <div className={styles.grid}>
         {locations.map((loc, index) => {
           return (
-            <WeatherCard
-              location={loc}
-              key={loc}
-              index={index}
-              setter={changeLocation}
-            />
+            <WeatherCard location={loc} key={loc} index={index} funcs={funcs} />
           )
         })}
-        <ReactQueryDevtools />
+        <AddCard funcs={funcs} />
       </div>
+      <ReactQueryDevtools />
     </main>
   )
 }
