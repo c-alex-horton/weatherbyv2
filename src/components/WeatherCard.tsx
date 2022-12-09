@@ -6,11 +6,12 @@ import { useQuery } from '@tanstack/react-query'
 import Input from './Input'
 import Button from './Button'
 import DayForecast from './DayForecast'
+import getAbbr from '../util/getAbbr'
 
 // Mapquest API Key
-const geoKey = process.env.REACT_APP_MAPQUEST
+// const geoKey = process.env.REACT_APP_MAPQUEST
 // OpenWeather API Key
-const weatherKey = process.env.REACT_APP_OPENWEATHER
+const weatherKey = process.env.REACT_APP_WEATHERAPI
 
 const WeatherCard = ({
   location,
@@ -26,42 +27,28 @@ const WeatherCard = ({
   }
 }) => {
   const [formValue, setFormValue] = useState('')
-  // Turn Location string into latitude and Longitude
-  const FetchLocation = async (location = 'austin,tx') => {
-    location = location.replace(/\s/g, '')
-
-    const res = await fetch(
-      `http://www.mapquestapi.com/geocoding/v1/address?key=${geoKey}&location=${location}`
-    )
-    const data = await res.json()
-    return data.results[0].locations[0]
-  }
 
   // Get weather from lat and lon
-  const FetchWeather = async (locData: any) => {
+  const FetchWeather = async (location: string) => {
+    // location = location.replace(/\s/g, '')
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?lat=${locData.latLng.lat}&lon=${locData.latLng.lng}&units=imperial&appid=${weatherKey}`
+      `http://api.weatherapi.com/v1/forecast.json?key=${weatherKey}&q=${location}&days=5&aqi=no&alerts=no`
     )
     const data = await res.json()
-    return data.list
+    return data
   }
 
-  // Fetch Location
-  const { data: locData } = useQuery(['locationData', location], () =>
-    FetchLocation(location)
-  )
-
-  // Fetch weather when locData in not unidentified
+  // Fetch weather
   const { isLoading, error, data } = useQuery(
-    ['weatherData', locData],
-    () => FetchWeather(locData),
+    ['weatherData', location],
+    () => FetchWeather(location),
     {
-      enabled: !!locData,
+      enabled: !!location,
     }
   )
 
   // Units (farenheit, celcius, etc)
-  const [unit] = useState(' F')
+  const [unit] = useState({ unit: '_f', display: ' F' })
 
   const handleChange = (e: any) => {
     setFormValue(e.target.value)
@@ -76,9 +63,9 @@ const WeatherCard = ({
   }
 
   const percent = calcPercent(
-    data[0].main.temp_min,
-    data[0].main.temp_max,
-    data[0].main.temp
+    data.forecast.forecastday[0].day[`mintemp${unit.unit}`],
+    data.forecast.forecastday[0].day[`maxtemp${unit.unit}`],
+    data.current[`temp${unit.unit}`]
   )
 
   return (
@@ -91,31 +78,41 @@ const WeatherCard = ({
       </div>
       <h1>
         <NearMe />
-        {locData?.adminArea5}, {locData?.adminArea3}
+        {data?.location.name}, {getAbbr(data.location.region)}
       </h1>
       <img
-        src={`http://openweathermap.org/img/wn/${data[0].weather[0].icon}@2x.png`}
-        alt={data[0].weather.description}
+        src={data.current.condition.icon}
+        alt={data.current.condition.text}
       />
+      {/* <p>{data.current.condition.text}</p> */}
+
       <h2 className={styles.flex}>
         <span className='material-symbols-rounded'>thermometer</span>
-        {Math.round(data[0].main.temp)}&deg;{unit}
+        {Math.floor(data.current[`temp${unit.unit}`])}
+        {unit.display}
       </h2>
+
       <div className={styles.bar}>
         <div className={styles.barFill} style={{ width: percent }} />
       </div>
+
       <div className={styles.cols}>
         <h3 className={styles.flex}>
           <span className='material-symbols-rounded'>arrow_drop_down</span>
-          {Math.round(data[0].main.temp_min)}&deg;{unit}
+          {Math.round(data.forecast.forecastday[0].day[`mintemp${unit.unit}`])}
+          &deg;{unit.display}
         </h3>
         <h3 className={styles.flex}>
           <span className='material-symbols-rounded'>arrow_drop_up</span>
-          {Math.round(data[0].main.temp_max)}&deg;{unit}
+          {Math.round(data.forecast.forecastday[0].day[`maxtemp${unit.unit}`])}
+          &deg;{unit.display}
         </h3>
       </div>
-      {data.map((e: any, index: any) => {
-        return <DayForecast data={e} key={index} />
+      {data.forecast.forecastday.map((e: any, index: any) => {
+        if (index === 0) {
+          return false
+        }
+        return <DayForecast data={e} key={index} unit={unit} />
       })}
       <Input onChange={handleChange} value={formValue} />
       <Button onClick={() => funcs.changeLocation(index, formValue)}>

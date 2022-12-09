@@ -9113,6 +9113,11 @@ stackframe@^1.3.4:
   resolved "https://registry.yarnpkg.com/stackframe/-/stackframe-1.3.4.tgz#b881a004c8c149a5e8efef37d51b16e412943310"
   integrity sha512-oeVtt7eWQS+Na6F//S4kJ2K2VbRlS9D43mAlMyVpVWovy9o+jfgH8O9agzANzaiLjclA0oYzUXEM4PurhSUChw==
 
+states-us@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/states-us/-/states-us-1.0.2.tgz#60dacdcc7c8397e0d443f903d356591d8dc0ee25"
+  integrity sha512-0t0C8mfjwZuo6xyRi3OJJtYa06YAC4l8VU2+BBamKeQJtPXKjJawu/TvkdqBxA9WAYK1tBO1vL7ql0kXYn3J4Q==
+
 statuses@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-2.0.1.tgz#55cb000ccf1d48728bd23c685a063998cf1a1b63"
