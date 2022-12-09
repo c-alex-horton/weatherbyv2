@@ -4,10 +4,22 @@ import { NearMe } from '@material-ui/icons'
 import calcPercent from '../util/calcPercent'
 import { useQuery } from '@tanstack/react-query'
 
+// Mapquest API Key
 const geoKey = process.env.REACT_APP_MAPQUEST
+// OpenWeather API Key
 const weatherKey = process.env.REACT_APP_OPENWEATHER
 
-const WeatherCard = ({ location = 'Austin, Tx' }) => {
+const WeatherCard = ({
+  location,
+  index,
+  setter,
+}: {
+  location: string
+  index: number
+  setter: (index: number, newLoc: string) => void
+}) => {
+  const [formValue, setFormValue] = useState('')
+  // Turn Location string into latitude and Longitude
   const FetchLocation = async (location = 'austin,tx') => {
     location = location.replace(/\s/g, '')
 
@@ -18,6 +30,7 @@ const WeatherCard = ({ location = 'Austin, Tx' }) => {
     return data.results[0].locations[0]
   }
 
+  // Get weather from lat and lon
   const FetchWeather = async (locData: any) => {
     const res = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?lat=${locData.latLng.lat}&lon=${locData.latLng.lng}&units=imperial&appid=${weatherKey}`
@@ -26,10 +39,16 @@ const WeatherCard = ({ location = 'Austin, Tx' }) => {
     return forcast
   }
 
+  // Fetch Location
   const { data: locData } = useQuery(['locationData', location], () =>
     FetchLocation(location)
   )
 
+  const handleChange = (e: any) => {
+    setFormValue(e.target.value)
+  }
+
+  // Fetch weather when locData in not unidentified
   const { isLoading, error, data } = useQuery(
     ['weatherData', locData],
     () => FetchWeather(locData),
@@ -38,6 +57,7 @@ const WeatherCard = ({ location = 'Austin, Tx' }) => {
     }
   )
 
+  // Units (farenheit, celcius, etc)
   const [unit] = useState(' F')
 
   if (isLoading) {
@@ -81,6 +101,16 @@ const WeatherCard = ({ location = 'Austin, Tx' }) => {
           {Math.round(data.main.temp_max)}&deg;{unit}
         </h3>
       </div>
+      <input
+        type={'text'}
+        className={styles.input}
+        value={formValue}
+        onChange={(e) => handleChange(e)}></input>
+      <button
+        className={styles.button}
+        onClick={() => setter(index, formValue)}>
+        Submit
+      </button>
     </div>
   )
 }
